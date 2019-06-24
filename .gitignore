@@ -1,0 +1,13 @@
+# Ignore mac system files
+*.DS_store
+
+# Ignore RH outputs
+*.dat
+*.out
+
+# Ignore fits files I might write out
+*.fits
+
+# Ignore these files too
+*.tar
+*.zip
