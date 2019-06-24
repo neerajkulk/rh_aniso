@@ -1,6 +1,9 @@
 # Ignore mac system files
 *.DS_store
 
+# Ignore emacs backups
+*~
+
 # Ignore RH outputs
 *.dat
 *.out
@@ -11,3 +14,4 @@
 # Ignore these files too
 *.tar
 *.zip
+*.tgz
