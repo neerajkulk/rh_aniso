@@ -2,7 +2,7 @@
 *.DS_store
 
 #Ignore files that pop up when RH compiles
-.a
+*.a
 
 # Ignore emacs backups
 *~
