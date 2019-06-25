@@ -1,8 +1,13 @@
 # Ignore mac system files
 *.DS_store
 
-#Ignore files that pop up when RH compiles
+
+
+#Ignore files that pop up when RH runs and compiles
+*.o
 *.a
+*rhsc3d
+*solveray
 
 # Ignore emacs backups
 *~
