@@ -41,21 +41,28 @@ extern char messageStr[];
 
 double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 {
+		
   const char routineName[] = "Formal";
-  register int k, l, mu, n;
-
+  register int k, l, mu, n, nact;
+  
   bool_t   initialize, boundbound, polarized_as, polarized_c,
     PRD_angle_dep, to_obs, solveStokes, angle_dep;
   enum     FeautrierOrder F_order;     
-  int      Nspace = atmos.Nspace, Nrays = atmos.Nrays;
-  double  *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
-    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V,
-    *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi;
+  int      Nspace = atmos.Nspace, Nrays = atmos.Nrays, nt;
+  
+  double  *phi, *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
+    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam;
+  
   ActiveSet *as;
+  AtomicLine *line;
+  Atom *atom;
+  pthread_mutex_t *rate_lock;
+
 
   /* --- Retrieve active set as of transitions at wavelength nspect - */
-
+  
   as = &spectrum.as[nspect];
+  nt = nspect % input.Nthreads;
   alloc_as(nspect, eval_operator);
   
   /* --- Check whether current active set includes a bound-bound
@@ -92,14 +99,14 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
                    (input.backgr_pol && input.StokesMode == FULL_STOKES) ||
                    (atmos.moving &&
                     (boundbound || atmos.backgrflags[nspect].hasline)));
-
+  
   /* --- Allocate temporary space --                   -------------- */
 
   if (eval_operator)
     Psi = (double *) malloc(Nspace * sizeof(double));
   else
     Psi = NULL;
-
+ 
   if (solveStokes) {
     Spol = matrix_double(4, Nspace);
     S    = Spol[0];
@@ -236,21 +243,65 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 
 	  /* --- Accumulate anisotropy --            -------------- */
 
-	  if (input.backgr_pol) {
-	    for (k = 0;  k < Nspace;  k++){
-     
-	      J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * wmu;
-	           
-	      reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )  * wmu;
-     
-	      imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * wmu;
-     
-	      reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k]) * wmu;
-     
-	      imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k]) * wmu;
-     
-	    }
-	  }
+
+	  
+	  
+	  // Dumped code here. copied from fillgamma.c
+
+	  	    
+	  for (nact = 0;  nact < atmos.Nactiveatom;  nact++) {
+	    atom = atmos.activeatoms[nact];
+	    printf(" there are active atoms \n");
+	    
+	    for (n = 0;  n < as->Nactiveatomrt[nact];  n++) {
+	      switch (as->art[nact][n].type) {
+	      case ATOMIC_LINE:
+		line = as->art[nact][n].ptype.line;
+		
+		if (!redistribute || line->PRD)
+		  rate_lock = &line->rate_lock;
+		
+		break;
+	      }
+
+	      // Start calculating anisotropy here...
+	      
+	      if (input.backgr_pol) {
+		    
+	      if (input.Nthreads > 1)
+		pthread_mutex_lock(rate_lock);
+	      
+	      
+	      for (k = 0;  k < atmos.Nspace;  k++) {
+		
+		domg_dlam = (atom->rhth[nt].Vij[n][k] * atom->rhth[nt].wla[n][k] * wmu)/(line->Bij * line->isotope_frac); // Based off the way Vij and wla are defined in opacity.c
+		
+		printf("hi \n");
+		
+		/* printf(messageStr, */
+	        /*      "is this going to work...\n"); */
+		/* Error(WARNING, "printing test", messageStr); */
+		    
+		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam + 1.0;
+
+		reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
+		
+		imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
+		
+		reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		
+		imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+
+		
+	      }
+	      
+	      if (input.Nthreads > 1) pthread_mutex_unlock(rate_lock);
+	      
+	      } //background polarization if statement
+	    } //atom for loop
+	  } //atom for loop
+	  
+	  
  
 	  if (PRD_angle_dep) writeImu(nspect, mu, to_obs, I);
 	}
@@ -269,13 +320,13 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
       }
     }
   } else {
-
+    
     /* --- The angle-independent case --               -------------- */
-
+    
     readBackground(nspect, 0, 0);
     Opacity(nspect, 0, 0, initialize=TRUE);
     if (eval_operator) addtoCoupling(nspect);
-
+    
     for (k = 0;  k < Nspace;  k++) {
       chi[k] = as->chi[k] + as->chi_c[k];
       S[k]   = (as->eta[k] +
