@@ -247,11 +247,9 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 	  
 	  
 	  // Dumped code here. copied from fillgamma.c
-
-	  	    
+	  
 	  for (nact = 0;  nact < atmos.Nactiveatom;  nact++) {
 	    atom = atmos.activeatoms[nact];
-	    printf(" there are active atoms \n");
 	    
 	    for (n = 0;  n < as->Nactiveatomrt[nact];  n++) {
 	      switch (as->art[nact][n].type) {
@@ -263,46 +261,133 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 		
 		break;
 	      }
-
+	      
 	      // Start calculating anisotropy here...
 	      
 	      if (input.backgr_pol) {
-		    
-	      if (input.Nthreads > 1)
-		pthread_mutex_lock(rate_lock);
-	      
-	      
-	      for (k = 0;  k < atmos.Nspace;  k++) {
 		
-		domg_dlam = (atom->rhth[nt].Vij[n][k] * atom->rhth[nt].wla[n][k] * wmu)/(line->Bij * line->isotope_frac); // Based off the way Vij and wla are defined in opacity.c
+		if (input.Nthreads > 1)
+		  pthread_mutex_lock(rate_lock);
 		
-		printf("hi \n");
 		
-		/* printf(messageStr, */
-	        /*      "is this going to work...\n"); */
-		/* Error(WARNING, "printing test", messageStr); */
-		    
-		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam + 1.0;
+		for (k = 0;  k < atmos.Nspace;  k++) {
+		  
+		  domg_dlam = (atom->rhth[nt].Vij[n][k] * atom->rhth[nt].wla[n][k] * wmu)/(line->Bij * line->isotope_frac); // Based off the way Vij and wla are defined in opacity.
 
-		reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
-		
-		imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
-		
-		reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
-		
-		imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		  J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
 
+		  reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
+		  
+		  imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
+		  
+		  reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		  
+		  imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		  
+		}
 		
-	      }
-	      
-	      if (input.Nthreads > 1) pthread_mutex_unlock(rate_lock);
-	      
+		if (input.Nthreads > 1) pthread_mutex_unlock(rate_lock);
+		
 	      } //background polarization if statement
 	    } //atom for loop
 	  } //atom for loop
 	  
+
+
+	  //	  printf("%0.19f",*J20);
 	  
- 
+	  FILE *fptr;
+
+	  //  printf("Writing files now!!! \n");
+	  fptr = fopen("J.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",J[k]);
+	  }
+	  fclose(fptr);
+
+	  
+	  fptr = fopen("J20.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",J20[k]);
+	  }
+	  fclose(fptr);
+
+	  
+	  fptr = fopen("reJ21.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",reJ21[k]);
+	  }
+	  fclose(fptr);
+	  
+	  
+	  fptr = fopen("reJ22.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",reJ22[k]);
+	  }
+	  fclose(fptr);
+	  
+	  fptr = fopen("imJ21.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",imJ21[k]);
+	  }
+	  fclose(fptr);
+	  
+	  
+	  fptr = fopen("imJ22.txt","w");
+	  if(fptr == NULL)
+	    {
+	      printf("Error!");   
+	      exit(1);             
+	    }
+	  
+	  for (k = 0;  k < atmos.Nspace;  k++) {
+	    fprintf(fptr,"%0.19f \n",imJ22[k]);
+	  }
+	  fclose(fptr);
+	  
+	  /*write in binary format so it scales better for larger arrays*/ 
+	  /* int written = 0; */
+	  /* FILE *f = fopen("testJ20.data", "wb"); */
+	  /* written = fwrite(J20, sizeof(J20), 1, f); */
+	  /* if (written == 0) { */
+	  /*   printf("Error during writing to file !"); */
+	  /* } */
+	  /* fclose(f); */
+	  
+	  
+	  
+	  
+	  
 	  if (PRD_angle_dep) writeImu(nspect, mu, to_obs, I);
 	}
       }
