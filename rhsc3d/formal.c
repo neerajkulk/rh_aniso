@@ -250,189 +250,191 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 	  
 	  // Dumped code here. copied from fillgamma.c
 	  
-	  for (nact = 0;  nact < atmos.Nactiveatom;  nact++) {
-	    atom = atmos.activeatoms[nact];
+	  for (nact = 0;  nact < atmos.Nactiveatom;  nact++) { 
+	    //printf("nact = %d \n", nact); 
+	    //printf("atmos.Nactiveatom = %d \n", atmos.Nactiveatom ); 
+	    atom = atmos.activeatoms[nact]; 
 	    
-	    for (n = 0;  n < as->Nactiveatomrt[nact];  n++) {
+	    for (n = 0;  n < as->Nactiveatomrt[nact];  n++) { 
+	      /*     //printf("n = %d \n", n); */
 	      switch (as->art[nact][n].type) {
 	      case ATOMIC_LINE:
-		line = as->art[nact][n].ptype.line;
-		//printf("loop runs more than once \n");
+	  	line = as->art[nact][n].ptype.line;
 		
-		if (!redistribute || line->PRD)
-		  rate_lock = &line->rate_lock;
+	  	if (!redistribute || line->PRD)
+	  	  rate_lock = &line->rate_lock;
 		
-		break;
+	  	break;
 	      }
 	      
-	      // Start calculating anisotropy here...
+	      // Start calculating anisotropy here... 
 	      
 	      if (input.backgr_pol) {
-		
-		if (input.Nthreads > 1)
-		  pthread_mutex_lock(rate_lock);
-		
-		
-		if (line->Nblue == 11){  // DIRTY hack to only integrate over the strontium 4607 line.
 		  
-		  //printf("size of line->phi is : %d \n", sizeof(line->phi)/sizeof(line->phi[0][0]));
+		  /* 	if (input.Nthreads > 1) */
+		  /* 	  pthread_mutex_lock(rate_lock); */
+		
+		
+		/* if (line->Nblue == 11){  // DIRTY hack to only integrate over the strontium 4607 line. */
+		  
+		/*   //printf("size of line->phi is : %d \n", sizeof(line->phi)/sizeof(line->phi[0][0])); */
 		  
 
 		  
-		  //		   printf("phi = %f \n", line->phi[51][1]);
-		  //printf("line ->Nlambda = %d \n",line->Nlambda);
+		/*   //		   printf("phi = %f \n", line->phi[51][1]); */
+		/*   //printf("line ->Nlambda = %d \n",line->Nlambda); */
 		  
-		  for (la = 0; la < line->Nlambda - 1 ; la++){
+		/*   for (la = 0; la < line->Nlambda - 1 ; la++){ */
 		    
-		    //printf(" la = %d \n", la);
-		    
-		    
-		    /* printf("line->Nblue  = %d \n", line->Nblue ); */
-		    
-		    /* printf("line->Nlambda  = %d \n", line->Nlambda ); */
-		    
-		    /*printf(" la = %d \n",la); */
+		/*     //printf(" la = %d \n", la); */
 		    
 		    
-		    for (k = 0;  k < atmos.Nspace;  k++) {
+		/*     /\* printf("line->Nblue  = %d \n", line->Nblue ); *\/ */
+		    
+		/*     /\* printf("line->Nlambda  = %d \n", line->Nlambda ); *\/ */
+		    
+		/*     /\*printf(" la = %d \n",la); *\/ */
+		    
+		    
+		/*     for (k = 0;  k < atmos.Nspace;  k++) { */
 		      
-		      /*printf(" k = %d \n",k);*/
+		/*       /\*printf(" k = %d \n",k);*\/ */
 		      
 		      
-		      //domg_dlam = line->phi[la][k]*wmu*line->wphi[k];
-		      domg_dlam = 1.0;
-		      //printf("%.20f \n",domg_dlam);
+		/*       //domg_dlam = line->phi[la][k]*wmu*line->wphi[k]; */
+		/*       domg_dlam = 1.0; */
+		/*       //printf("%.20f \n",domg_dlam); */
 		     
 
-		      //printf("k = %d \n", k);
-		      //printf(" phi = %f \n ", domg_dlam);
+		/*       //printf("k = %d \n", k); */
+		/*       //printf(" phi = %f \n ", domg_dlam); */
 
-		      // printf("no problems yet \n");
+		/*       // printf("no problems yet \n"); */
 		      
-		      //domg_dlam = (atom->rhth[nt].Vij[n][k] * atom->rhth[nt].wla[n][k] * wmu)/(line->Bij * line->isotope_frac); // Based off the way Vij and wla are defined in opacity.
+		/*       //domg_dlam = (atom->rhth[nt].Vij[n][k] * atom->rhth[nt].wla[n][k] * wmu)/(line->Bij * line->isotope_frac); // Based off the way Vij and wla are defined in opacity. */
 
-		      //printf("J20_input  = %.20f\n",(threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam);
+		/*       //printf("J20_input  = %.20f\n",(threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam); */
 		      
-		      J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
-		      //printf("J20 = %.20f \n",J20 );
+		/*       J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam; */
+		/*       //printf("J20 = %.20f \n",J20 ); */
 		      
-		      reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
+		/* /\*       reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * ( *\/Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam; */
 		      
-		      imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
+		/*       imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam; */
 		      
-		      reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		/*       reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam; */
 		      
-		      imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
+		/*       imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam; */
 		      
-		    } // k for loop
-		  } // la for loop
+		/*     } // k for loop */
+		/*   } // la for loop */
 
 		  
-		  FILE *fptr;
+		/*   FILE *fptr; */
 		  
-		  //  printf("Writing files now!!! \n");
-		  fptr = fopen("J.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
+		/*   //  printf("Writing files now!!! \n"); */
+		/*   fptr = fopen("J.txt","w"); */
+		  /* if(fptr == NULL) */
+		  /*   { */
+		  /*     printf("Error!");    */
+		  /*     exit(1);              */
+		  /*   } */
 		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",J[k]);
-		  }
-		  fclose(fptr);
-		  
-		  
-		  fptr = fopen("J20.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
-		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",J20[k]);
-		  }
-		  fclose(fptr);
+		  /* for (k = 0;  k < atmos.Nspace;  k++) { */
+		  /*   fprintf(fptr,"%0.20f \n",J[k]); */
+		  /* } */
+		  /* fclose(fptr); */
 		  
 		  
-		  fptr = fopen("reJ21.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
+		  /* fptr = fopen("J20.txt","w"); */
+		  /* if(fptr == NULL) */
+		  /*   { */
+		  /*     printf("Error!");    */
+		  /*     exit(1);              */
+		  /*   } */
 		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",reJ21[k]);
-		  }
-		  fclose(fptr);
-		  
-		  
-		  fptr = fopen("reJ22.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
-		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",reJ22[k]);
-		  }
-		  fclose(fptr);
-		  
-		  fptr = fopen("imJ21.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
-		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",imJ21[k]);
-		  }
-		  fclose(fptr);
+		  /* for (k = 0;  k < atmos.Nspace;  k++) { */
+		  /*   fprintf(fptr,"%0.20f \n",J20[k]); */
+		  /* } */
+		  /* fclose(fptr); */
 		  
 		  
-		  fptr = fopen("imJ22.txt","w");
-		  if(fptr == NULL)
-		    {
-		      printf("Error!");   
-		      exit(1);             
-		    }
+		  /* fptr = fopen("reJ21.txt","w"); */
+		  /* if(fptr == NULL) */
+		  /*   { */
+		  /*     printf("Error!");    */
+		  /*     exit(1);              */
+		  /*   } */
 		  
-		  for (k = 0;  k < atmos.Nspace;  k++) {
-		    fprintf(fptr,"%0.20f \n",imJ22[k]);
-		  }
-		  fclose(fptr);
-		  break;
+		  /* for (k = 0;  k < atmos.Nspace;  k++) { */
+		  /*   fprintf(fptr,"%0.20f \n",reJ21[k]); */
+		  /* } */
+		  /* fclose(fptr); */
 		  
-		} // if strontium line
+		  
+		  /* fptr = fopen("reJ22.txt","w"); */
+		  /* if(fptr == NULL) */
+		  /*   { */
+		  /*     printf("Error!");    */
+		  /*     exit(1);              */
+		  /*   } */
+		  
+		  /* for (k = 0;  k < atmos.Nspace;  k++) { */
+		/*     fprintf(fptr,"%0.20f \n",reJ22[k]); */
+		/*   } */
+		/*   fclose(fptr); */
+		  
+		/*   fptr = fopen("imJ21.txt","w"); */
+		/*   if(fptr == NULL) */
+		/*     { */
+		/*       printf("Error!");    */
+		/*       exit(1);              */
+		/*     } */
+		  
+		/*   for (k = 0;  k < atmos.Nspace;  k++) { */
+		/*     fprintf(fptr,"%0.20f \n",imJ21[k]); */
+		/*   } */
+		/*   fclose(fptr); */
+		  
+		  
+	  /* 	/\*   fptr = fopen("imJ22.txt","w"); *\/ */
+	  /* 	/\*   if(fptr == NULL) *\/ */
+	  /* 	/\*     { *\/ */
+	  /* 	/\*       printf("Error!");    *\/ */
+	  /* 	/\*       exit(1);              *\/ */
+	  /* 	/\*     } *\/ */
+		  
+	  /* 	/\*   for (k = 0;  k < atmos.Nspace;  k++) { *\/ */
+	  /* 	/\*     fprintf(fptr,"%0.20f \n",imJ22[k]); *\/ */
+	  /* 	/\*   } *\/ */
+	  /* 	/\*   fclose(fptr); *\/ */
+	  /* 	/\*   break; *\/ */
+		  
+	  /* 	/\* } // if strontium line *\/ */
 		
 		
 		
 		
 		
 		
-	      } //background polarization if statement
-	    } //atom - radiative transition for loop
-	  } //atom for loop
+	      }//background polarization if statement 
+	    } //atom - radiative transition for loop 
+	  } //atom for loop 
 	  
-	  if (input.Nthreads > 1) pthread_mutex_unlock(rate_lock);
+	  /* if (input.Nthreads > 1) pthread_mutex_unlock(rate_lock); */
 	  
 	  
 	  
-	  //printf("J20 = %0.20f\n ",*J20);
+	  /* //printf("J20 = %0.20f\n ",*J20); */
 	  
-	  /*write in binary format so it scales better for larger arrays*/ 
-	  /* int written = 0; */
-	  /* FILE *f = fopen("testJ20.data", "wb"); */
-	  /* written = fwrite(J20, sizeof(J20), 1, f); */
-	  /* if (written == 0) { */
-	  /*   printf("Error during writing to file !"); */
-	  /* } */
-	  /* fclose(f); */
+	  /* /\*write in binary format so it scales better for larger arrays*\/  */
+	  /* /\* int written = 0; *\/ */
+	  /* /\* FILE *f = fopen("testJ20.data", "wb"); *\/ */
+	  /* /\* written = fwrite(J20, sizeof(J20), 1, f); *\/ */
+	  /* /\* if (written == 0) { *\/ */
+	  /* /\*   printf("Error during writing to file !"); *\/ */
+	  /* /\* } *\/ */
+	  /* /\* fclose(f); *\/ */
 	  
 	  
 	  
