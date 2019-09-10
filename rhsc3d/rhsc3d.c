@@ -40,6 +40,7 @@
 #include "xdr.h"
 
 
+
 /* --- Function prototypes --                          -------------- */
 
 
@@ -55,6 +56,9 @@ ProgramStats stats;
 InputData input;
 CommandLine commandline;
 char messageStr[MAX_LINE_SIZE];
+
+
+
 
 
 /* ------- begin -------------------------- main.c ------------------ */
@@ -104,6 +108,7 @@ int main(int argc, char *argv[])
     if (solveSpectrum(FALSE, FALSE) <= input.iterLimit) break;
     niter++;
   }
+
   /* --- Write output files --                     ------------------ */
  
   getCPU(1, TIME_START, NULL);
@@ -128,7 +133,7 @@ int main(int argc, char *argv[])
     writeMolPops(molecule);
   }
   writeOpacity();
- 
+  write_spherical_tensor();
   getCPU(1, TIME_POLL, "Write output");
   printTotalCPU();
 }
