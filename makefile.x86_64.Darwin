@@ -18,7 +18,7 @@ XARCH  =
 ## --- If no f90 compiler is available comment out -DHAVE_F90
 
 CC       = gcc
-CFLAGS   = -m64 -DHAVE_F90 ##-Wall 
+CFLAGS   = -m64 -DHAVE_F90 -g ##-Wall 
 
 
 ## --- Macros for F90 alternative routines --           ------------- ##
