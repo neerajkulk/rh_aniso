@@ -48,6 +48,7 @@ typedef struct {
 /* --- Associated function prototypes --               -------------- */
 
 double Formal(int nspect, bool_t eval_operator, bool_t redistribute);
+void   write_spherical_tensor();
 double solveSpectrum(bool_t eval_operator, bool_t redistribute);
 
 void   addtoGamma(int nspect, double wmu, double *P, double *Psi);
