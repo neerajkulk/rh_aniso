@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+rm *out
+rm *dat
+rm *fits
+
+cd ../..
+make
+
+cd rhsc3d
+make
+
+cd aniso_test
+../rhsc3d
