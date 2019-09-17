@@ -353,8 +353,8 @@ void write_spherical_tensor()
   printf("\n \n \n Computing and writing spherical tensors \n \n \n");
 
   int nspect;
-  bool_t eval_operator = TRUE;  // @@ TODO: ask han about these flags?
-  bool_t redistribute = TRUE;
+  bool_t eval_operator = FALSE;
+  bool_t redistribute = FALSE;
   
   register int k, l, mu, n, nact;
   
