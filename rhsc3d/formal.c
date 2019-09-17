@@ -361,7 +361,7 @@ void write_spherical_tensor()
   bool_t   initialize, boundbound, polarized_as, polarized_c,
     PRD_angle_dep, to_obs, solveStokes, angle_dep;
   enum     FeautrierOrder F_order;     
-  int      Nspace = atmos.Nspace, Nrays = atmos.Nrays, nt,la;
+  int      Nspace = atmos.Nspace, Nrays = atmos.Nrays, nt,la,ni,nf;
   
   double  *phi, *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
     *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam;
@@ -371,7 +371,29 @@ void write_spherical_tensor()
   Atom *atom;
   pthread_mutex_t *rate_lock;
   
-  for (nspect =11; nspect <=61; nspect++){  // For loop over SR wavelengths
+  /* Loop over all wavelengths to find indices corresponding to strontium 4607  wavelengths*/ 
+
+  for (nspect = 0; nspect <= spectrum.Nspect - 1; nspect++){  
+    as = &spectrum.as[nspect];
+    for (nact = 0;  nact < atmos.Nactiveatom;  nact++) {
+      atom = atmos.activeatoms[nact];
+      for (n = 0;  n < as->Nactiveatomrt[nact];  n++) {
+	
+	line = as->art[nact][n].ptype.line;
+	
+	if (fabs(line->lambda0 - 460.861732) < 0.00001)
+	  {
+	    ni = line->Nblue;
+	    nf = ni + line->Nlambda - 1;
+	  }
+      }
+    }
+  }
+
+  /* Now start integration over just 4607 wavelengths */
+  
+  for (nspect =ni; nspect <=nf; nspect++){  // For loop over SR wavelengths
+    
     printf("wavelength = %.20f \n", spectrum.lambda[nspect]/1.00029);
     
     /* --- Retrieve active set as of transitions at wavelength nspect - */
@@ -561,7 +583,6 @@ void write_spherical_tensor()
 	  }	}
 	/* --- start calculating spherical tensors --              -------------- */
 	
-	
 	for (nact = 0;  nact < atmos.Nactiveatom;  nact++) {
 	  atom = atmos.activeatoms[nact];
 	  
@@ -569,6 +590,7 @@ void write_spherical_tensor()
 
 	    
 	    line = as->art[nact][n].ptype.line;
+	    //printf("lambda0 = %f \n",line->lambda0);
 	    
 	    
 	    if (!redistribute || line->PRD)
