@@ -6,7 +6,7 @@
 #Ignore files that pop up when RH runs and compiles
 *.o
 *.a
-*rhsc3d
+*rhsc3d/rhsc3d
 *solveray
 
 # Ignore emacs backups
