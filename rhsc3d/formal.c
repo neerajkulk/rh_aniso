@@ -371,7 +371,7 @@ void write_spherical_tensor()
   Atom *atom;
   pthread_mutex_t *rate_lock;
   
-  /* Loop over all wavelengths to find indices corresponding to strontium 4607  wavelengths*/ 
+  /* Loop over all wavelengths to find indices corresponding to strontium 4607 wavelengths */ 
 
   for (nspect = 0; nspect <= spectrum.Nspect - 1; nspect++){  
     as = &spectrum.as[nspect];
@@ -383,8 +383,8 @@ void write_spherical_tensor()
 	
 	if (fabs(line->lambda0 - 460.861732) < 0.00001)
 	  {
-	    ni = line->Nblue;
-	    nf = ni + line->Nlambda - 1;
+	    ni = line->Nblue; // first index of 4607 line 
+	    nf = ni + line->Nlambda - 1; // last index of 4607 line 
 	  }
       }
     }
@@ -590,13 +590,9 @@ void write_spherical_tensor()
 
 	    
 	    line = as->art[nact][n].ptype.line;
-	    //printf("lambda0 = %f \n",line->lambda0);
-	    
 	    
 	    if (!redistribute || line->PRD)
 	      rate_lock = &line->rate_lock;
-	    
-	    
 	    
 	    // Start calculating anisotropy here...
 	    
@@ -610,9 +606,9 @@ void write_spherical_tensor()
 	      wlambda = getwlambda_line(line,la);
 	      
 	      for (k = 0;  k < atmos.Nspace;  k++) {
-
+		
 		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda;
-
+		
 		J[k] += Ipol[0][k] * domg_dlam;
 		
 		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
@@ -636,7 +632,6 @@ void write_spherical_tensor()
   
   FILE *fptr;
   
-  //  printf("Writing files now!!! \n");
   fptr = fopen("J.txt","w");
   if(fptr == NULL)
     {
@@ -712,6 +707,4 @@ void write_spherical_tensor()
     fprintf(fptr,"%0.20f \n",imJ22[k]);
   }
   fclose(fptr);
-  
-   
 }
