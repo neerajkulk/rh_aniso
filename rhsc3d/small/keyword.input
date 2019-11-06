@@ -7,7 +7,7 @@
 # First specify input files for atmosphere and abundances
 # (both KEYWORD_REQUIRED).
 
-  ATMOS_FILE = ../../Atmos/small.atmos
+  ATMOS_FILE = /Users/kulkarniad/muram/small.atmos
   ABUND_FILE = ../../Atoms/abundance.input
 
 # Set choice of angular grid (KEYWORD_OPTIONAL).
