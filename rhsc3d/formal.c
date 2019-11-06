@@ -704,4 +704,17 @@ void write_spherical_tensor()
     fprintf(fptr,"%0.20f \n",imJ22[k]);
   }
   fclose(fptr);
+  
+  fptr = fopen("Cij8.txt","w");
+  if(fptr == NULL)
+    {
+      printf("Error!");
+      exit(1);
+    }
+  
+  for (k = 0;  k < atmos.Nspace;  k++) {
+    fprintf(fptr,"%0.20f \n",atom->C[8][k]);
+  }
+  fclose(fptr);
+  
 }
