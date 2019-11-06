@@ -714,6 +714,8 @@ void write_spherical_tensor()
   
   for (k = 0;  k < atmos.Nspace;  k++) {
     fprintf(fptr,"%0.20f \n",atom->C[8][k]);
+    /* The 4607 line transition occurs between levels, 8->0. Hence I'm using the 8th element in atom->C. 
+     See documentation in collision.c for more info on the book keeping*/
   }
   fclose(fptr);
   
