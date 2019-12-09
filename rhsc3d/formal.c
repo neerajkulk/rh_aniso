@@ -391,6 +391,7 @@ void write_spherical_tensor()
     }
   }
 
+  /* Allocate memory for spherical tensors and initialize them with zeros */
   J00 = (double *) malloc(Nspace * sizeof(double));
   J20 = (double *) malloc(Nspace * sizeof(double));
   reJ21 = (double *) malloc(Nspace * sizeof(double));
@@ -487,42 +488,9 @@ void write_spherical_tensor()
     if (spectrum.updateJ)
       for (k = 0;  k < Nspace;  k++) J[k] = 0.0;
 
-    /* --- Store current anisotropy, initialize new one to zero ---- -- */
-
-    /* if (input.backgr_pol) { */
-    /*   J20dag = (double *) malloc(Nspace * sizeof(double)); */
-    /*   if (input.limit_memory) { */
-    /* 	J20 = (double *) malloc(Nspace * sizeof(double)); */
-    /* 	reJ21 = (double *) malloc(Nspace * sizeof(double)); */
-    /* 	imJ21 = (double *) malloc(Nspace * sizeof(double)); */
-    /* 	reJ22 = (double *) malloc(Nspace * sizeof(double)); */
-    /* 	imJ22 = (double *) malloc(Nspace * sizeof(double)); */
-
-    /* 	readJ20lambda(nspect, J20dag); */
-    /*   } else { */
-    /* 	J20 = spectrum.J20[nspect]; */
-    /* 	reJ21 = spectrum.reJ21[nspect]; */
-    /* 	imJ21 = spectrum.imJ21[nspect]; */
-    /* 	reJ22 = spectrum.reJ22[nspect]; */
-    /* 	imJ22 = spectrum.imJ22[nspect]; */
-
-    /* 	for (k = 0;  k < Nspace;  k++) */
-    /* 	  J20dag[k] = J20[k]; */
-    /*   } */
-    /*   if (spectrum.updateJ) */
-    /* 	for (k = 0;  k < Nspace;  k++){ */
-    /* 	  J20[k]   = 0.0; */
-    /* 	  reJ21[k] = 0.0; */
-    /* 	  imJ21[k] = 0.0; */
-    /* 	  reJ22[k] = 0.0; */
-    /* 	  imJ22[k] = 0.0; */
-    /* 	} */
-
-    /* } */
-
 
     if (angle_dep) {
-      for (mu = 0;  mu < Nrays;  mu++) {
+      for (mu = 0;  mu < Nrays;  mu++) { /* angle integration loop */
 	wmu = 0.5 * geometry.wmu[mu];
 	if (input.backgr_pol) {
 
@@ -593,7 +561,6 @@ void write_spherical_tensor()
 
 	    /* --- Accumulate mean intensity and rates -- ----------- */
 
-
 	    addtoRates(nspect, mu, to_obs, wmu, I, redistribute);
 
 	    /* --- Accumulate anisotropy --            -------------- */
@@ -612,7 +579,7 @@ void write_spherical_tensor()
 	    if (!redistribute || line->PRD)
 	      rate_lock = &line->rate_lock;
 
-	    // Start calculating anisotropy here...
+	    /* Start calculating anisotropy here... */
 
 	    if (input.backgr_pol) {
 
@@ -620,30 +587,15 @@ void write_spherical_tensor()
 		pthread_mutex_lock(rate_lock);
 
 	      la = nspect - line->Nblue;
-	      Dopplerwidth = CLIGHT / (line->lambda0*1e-9); // Doppler width in SI units 
 
-	      printf("(line->lambda[la+1] - line->lambda[la]) = %e \n", (line->lambda[la+1] - line->lambda[la]));
-	      //printf("line->lambda0 = %f\n", line->lambda0);
-	      //printf("CLIGHT = %f\n", CLIGHT);	      
-	      
 	      wlambda = getwlambda_line(line,la);
 	      dlam = wlambda/Dopplerwidth;
-
-	     
 	      
 	      for (k = 0;  k < atmos.Nspace;  k++) {
 
 		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda;
 
-		printf("extra_stuff = %e \n",line->phi[la][k] *line->wphi[k] * wlambda );
-		printf("line-> phi = %e \n",line->phi[la][k]);
-		printf("wphi = %e \n",line->wphi[k]);
-		printf("wlambda = %e \n",wlambda );
-		printf("dlam = %e \n", dlam);
-
-		
 		J00[k] += Ipol[0][k] * domg_dlam ;
-		//printf("sphreical tensor J[k] is : %f \n", J[k]*1e8);
 
 		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
 
