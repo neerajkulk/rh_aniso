@@ -236,8 +236,10 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 
 	  /* --- Accumulate mean intensity and rates -- ----------- */
 
-	  for (k = 0;  k < Nspace;  k++)
+	  for (k = 0;  k < Nspace;  k++){
 	    J[k] += wmu * I[k];
+	    //printf("J[k] original is: %f\n", J[k]*1e8);
+	  }
 	  addtoRates(nspect, mu, to_obs, wmu, I, redistribute);
 
 	  /* --- Accumulate anisotropy --            -------------- */
@@ -363,7 +365,7 @@ void write_spherical_tensor()
   int      Nspace = atmos.Nspace, Nrays = atmos.Nrays, nt,la,ni,nf;
 
   double  *phi, *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
-    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam;
+    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam, Dopplerwidth, dlam;
 
   ActiveSet *as;
   AtomicLine *line;
@@ -600,14 +602,30 @@ void write_spherical_tensor()
 		pthread_mutex_lock(rate_lock);
 
 	      la = nspect - line->Nblue;
+	      Dopplerwidth = CLIGHT / (line->lambda0*1e-9); // Doppler width in SI units 
 
+	      printf("(line->lambda[la+1] - line->lambda[la]) = %e \n", (line->lambda[la+1] - line->lambda[la]));
+	      //printf("line->lambda0 = %f\n", line->lambda0);
+	      //printf("CLIGHT = %f\n", CLIGHT);	      
+	      
 	      wlambda = getwlambda_line(line,la);
+	      dlam = wlambda/Dopplerwidth;
 
+	     
+	      
 	      for (k = 0;  k < atmos.Nspace;  k++) {
 
-		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda;
+		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * dlam;
 
-		J[k] += Ipol[0][k] * domg_dlam;
+		printf("extra_stuff = %e \n",line->phi[la][k] *line->wphi[k] * wlambda );
+		printf("line-> phi = %e \n",line->phi[la][k]);
+		printf("wphi = %e \n",line->wphi[k]);
+		printf("wlambda = %e \n",wlambda );
+		printf("dlam = %e \n", dlam);
+
+		
+		J[k] += Ipol[0][k] * domg_dlam ;
+		//printf("sphreical tensor J[k] is : %f \n", J[k]*1e8);
 
 		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
 
