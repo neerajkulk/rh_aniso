@@ -633,7 +633,7 @@ void write_spherical_tensor()
 	      
 	      for (k = 0;  k < atmos.Nspace;  k++) {
 
-		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * dlam;
+		domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda;
 
 		printf("extra_stuff = %e \n",line->phi[la][k] *line->wphi[k] * wlambda );
 		printf("line-> phi = %e \n",line->phi[la][k]);
