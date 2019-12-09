@@ -365,7 +365,7 @@ void write_spherical_tensor()
   int      Nspace = atmos.Nspace, Nrays = atmos.Nrays, nt,la,ni,nf;
 
   double  *phi, *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
-    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam, Dopplerwidth, dlam;
+    *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V, *J20dag, musq, threemu1, threemu2, *J,*J00, *J20, *reJ21, *imJ21, *reJ22, *imJ22, inc, azi, wlambda, domg_dlam, Dopplerwidth, dlam;
 
   ActiveSet *as;
   AtomicLine *line;
@@ -390,6 +390,24 @@ void write_spherical_tensor()
       }
     }
   }
+
+  J00 = (double *) malloc(Nspace * sizeof(double));
+  J20 = (double *) malloc(Nspace * sizeof(double));
+  reJ21 = (double *) malloc(Nspace * sizeof(double));
+  imJ21 = (double *) malloc(Nspace * sizeof(double));
+  reJ22 = (double *) malloc(Nspace * sizeof(double));
+  imJ22 = (double *) malloc(Nspace * sizeof(double));
+  
+  for (k = 0;  k < Nspace;  k++){
+    J00[k]   = 0.0;
+    J20[k]   = 0.0;
+    reJ21[k] = 0.0;
+    imJ21[k] = 0.0;
+    reJ22[k] = 0.0;
+    imJ22[k] = 0.0;
+  }
+	
+  
 
   /* Now start integration over just 4607 wavelengths */
 
@@ -471,36 +489,36 @@ void write_spherical_tensor()
 
     /* --- Store current anisotropy, initialize new one to zero ---- -- */
 
-    if (input.backgr_pol) {
-      J20dag = (double *) malloc(Nspace * sizeof(double));
-      if (input.limit_memory) {
-	J20 = (double *) malloc(Nspace * sizeof(double));
-	reJ21 = (double *) malloc(Nspace * sizeof(double));
-	imJ21 = (double *) malloc(Nspace * sizeof(double));
-	reJ22 = (double *) malloc(Nspace * sizeof(double));
-	imJ22 = (double *) malloc(Nspace * sizeof(double));
+    /* if (input.backgr_pol) { */
+    /*   J20dag = (double *) malloc(Nspace * sizeof(double)); */
+    /*   if (input.limit_memory) { */
+    /* 	J20 = (double *) malloc(Nspace * sizeof(double)); */
+    /* 	reJ21 = (double *) malloc(Nspace * sizeof(double)); */
+    /* 	imJ21 = (double *) malloc(Nspace * sizeof(double)); */
+    /* 	reJ22 = (double *) malloc(Nspace * sizeof(double)); */
+    /* 	imJ22 = (double *) malloc(Nspace * sizeof(double)); */
 
-	readJ20lambda(nspect, J20dag);
-      } else {
-	J20 = spectrum.J20[nspect];
-	reJ21 = spectrum.reJ21[nspect];
-	imJ21 = spectrum.imJ21[nspect];
-	reJ22 = spectrum.reJ22[nspect];
-	imJ22 = spectrum.imJ22[nspect];
+    /* 	readJ20lambda(nspect, J20dag); */
+    /*   } else { */
+    /* 	J20 = spectrum.J20[nspect]; */
+    /* 	reJ21 = spectrum.reJ21[nspect]; */
+    /* 	imJ21 = spectrum.imJ21[nspect]; */
+    /* 	reJ22 = spectrum.reJ22[nspect]; */
+    /* 	imJ22 = spectrum.imJ22[nspect]; */
 
-	for (k = 0;  k < Nspace;  k++)
-	  J20dag[k] = J20[k];
-      }
-      if (spectrum.updateJ)
-	for (k = 0;  k < Nspace;  k++){
-	  J20[k]   = 0.0;
-	  reJ21[k] = 0.0;
-	  imJ21[k] = 0.0;
-	  reJ22[k] = 0.0;
-	  imJ22[k] = 0.0;
-	}
+    /* 	for (k = 0;  k < Nspace;  k++) */
+    /* 	  J20dag[k] = J20[k]; */
+    /*   } */
+    /*   if (spectrum.updateJ) */
+    /* 	for (k = 0;  k < Nspace;  k++){ */
+    /* 	  J20[k]   = 0.0; */
+    /* 	  reJ21[k] = 0.0; */
+    /* 	  imJ21[k] = 0.0; */
+    /* 	  reJ22[k] = 0.0; */
+    /* 	  imJ22[k] = 0.0; */
+    /* 	} */
 
-    }
+    /* } */
 
 
     if (angle_dep) {
@@ -624,7 +642,7 @@ void write_spherical_tensor()
 		printf("dlam = %e \n", dlam);
 
 		
-		J[k] += Ipol[0][k] * domg_dlam ;
+		J00[k] += Ipol[0][k] * domg_dlam ;
 		//printf("sphreical tensor J[k] is : %f \n", J[k]*1e8);
 
 		J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
@@ -647,7 +665,7 @@ void write_spherical_tensor()
 
   FILE *fptr;
 
-  fptr = fopen("J.txt","w");
+  fptr = fopen("J00.txt","w");
   if(fptr == NULL)
     {
       printf("Error!");
@@ -655,7 +673,7 @@ void write_spherical_tensor()
     }
 
   for (k = 0;  k < atmos.Nspace;  k++) {
-    fprintf(fptr,"%0.20f \n",J[k]);
+    fprintf(fptr,"%0.20f \n",J00[k]);
   }
   fclose(fptr);
 
