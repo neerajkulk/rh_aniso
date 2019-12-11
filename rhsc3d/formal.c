@@ -708,8 +708,8 @@ void write_spherical_tensor()
   fclose(fptr);
 
 
-
-  free_as(nspect, eval_operator);
+  
+  //free_as(nspect, eval_operator);
   if (eval_operator) free(Psi);
   
   free(chi);
