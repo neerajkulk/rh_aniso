@@ -706,5 +706,34 @@ void write_spherical_tensor()
      See documentation in collision.c for more info on the book keeping*/
   }
   fclose(fptr);
+
+
+
+  free_as(nspect, eval_operator);
+  if (eval_operator) free(Psi);
+  
+  free(chi);
+  if (solveStokes) {
+    freeMatrix((void **) Ipol);
+    freeMatrix((void **) Spol);
+  } else {
+    free(I);
+    free(S);
+  }
+  
+  free(Jdag);
+  if (input.limit_memory) free(J);
+  if (input.backgr_pol) {
+    if (input.limit_memory) {
+      free(J00);
+      free(J20);
+      free(reJ21);
+      free(imJ21);
+      free(reJ22);
+      free(imJ22);
+
+    }
+  }
+
   
 }
