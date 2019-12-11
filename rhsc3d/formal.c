@@ -723,17 +723,12 @@ void write_spherical_tensor()
   
   free(Jdag);
   if (input.limit_memory) free(J);
-  if (input.backgr_pol) {
-    if (input.limit_memory) {
-      free(J00);
-      free(J20);
-      free(reJ21);
-      free(imJ21);
-      free(reJ22);
-      free(imJ22);
-
-    }
-  }
-
+  
+  free(J00);
+  free(J20);
+  free(reJ21);
+  free(imJ21);
+  free(reJ22);
+  free(imJ22);
   
 }
