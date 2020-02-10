@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     writeMolPops(molecule);
   }
   writeOpacity();
- 
+  write_spherical_tensor();
   getCPU(1, TIME_POLL, "Write output");
   printTotalCPU();
 }
