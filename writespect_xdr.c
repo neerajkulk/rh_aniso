@@ -126,9 +126,7 @@ void writeSpectrum(Spectrum *spectrum)
 
     close(spectrum->fd_J);
 
-    /* -------------------- Write the anisotropy in the radiation field  ------------ */
-
-    /* ------------------------ J20  ------------------------------------------------ */
+    /* --- Write the anisotropy J^2_0 in the z-direction -- --------- */
 
     if (input.backgr_pol) {
       if ((spectrum->fd_J20 =
@@ -141,62 +139,6 @@ void writeSpectrum(Spectrum *spectrum)
 	writeJ20lambda(nspect, spectrum->J20[nspect]);
       
       close(spectrum->fd_J20);
-
-      /* ----------------------- reJ21  ------------------------------------------------ */
-
-      if ((spectrum->fd_reJ21 =
-	   open(reJ21_DOT_OUT, O_WRONLY | O_CREAT, PERMISSIONS)) == -1) {
-	sprintf(messageStr, "Unable to open output file %s", reJ21_DOT_OUT);
-	Error(ERROR_LEVEL_1, routineName, messageStr);
-	return;
-      }
-      for (nspect = 0;  nspect < spectrum->Nspect;  nspect++)
-	writereJ21lambda(nspect, spectrum->reJ21[nspect]);
-      
-      close(spectrum->fd_reJ21);
-
-      /* -------------------- imJ21  ------------------------------------------------ */
-      
-      
-      if ((spectrum->fd_imJ21 =
-	   open(imJ21_DOT_OUT, O_WRONLY | O_CREAT, PERMISSIONS)) == -1) {
-	sprintf(messageStr, "Unable to open output file %s", imJ21_DOT_OUT);
-	Error(ERROR_LEVEL_1, routineName, messageStr);
-	return;
-      }
-      for (nspect = 0;  nspect < spectrum->Nspect;  nspect++)
-	writeimJ21lambda(nspect, spectrum->imJ21[nspect]);
-      
-      close(spectrum->fd_imJ21);
-
-      /* -------------------- reJ22  ------------------------------------------------ */
-
-      if ((spectrum->fd_reJ22 =
-	   open(reJ22_DOT_OUT, O_WRONLY | O_CREAT, PERMISSIONS)) == -1) {
-	sprintf(messageStr, "Unable to open output file %s", reJ22_DOT_OUT);
-	Error(ERROR_LEVEL_1, routineName, messageStr);
-	return;
-      }
-      for (nspect = 0;  nspect < spectrum->Nspect;  nspect++)
-	writereJ22lambda(nspect, spectrum->reJ22[nspect]);
-      
-      close(spectrum->fd_reJ22);
-
-      /* -------------------- imJ22  ------------------------------------------------ */
-      
-
-      if ((spectrum->fd_imJ22 =
-	   open(imJ22_DOT_OUT, O_WRONLY | O_CREAT, PERMISSIONS)) == -1) {
-	sprintf(messageStr, "Unable to open output file %s", imJ22_DOT_OUT);
-	Error(ERROR_LEVEL_1, routineName, messageStr);
-	return;
-      }
-      for (nspect = 0;  nspect < spectrum->Nspect;  nspect++)
-	writeimJ22lambda(nspect, spectrum->imJ22[nspect]);
-      
-      close(spectrum->fd_imJ22);
-
-      
     }
   }
 }

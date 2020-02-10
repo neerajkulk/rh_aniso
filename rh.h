@@ -53,10 +53,6 @@ enum VoigtAlgorithm {ARMSTRONG, RYBICKI, HUI_ETAL, HUMLICEK, LOOKUP};
 
 #define FLUX_DOT_OUT  "flux.out"
 #define J20_DOT_OUT   "J20.out"
-#define reJ21_DOT_OUT "reJ21.out"
-#define imJ21_DOT_OUT "imJ21.out"
-#define reJ22_DOT_OUT "reJ22.out"
-#define imJ22_DOT_OUT "imJ22.out"
 
 #define PERMISSIONS  0666
 

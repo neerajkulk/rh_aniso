@@ -14,7 +14,7 @@
 # Options: SET_VERTICAL, SET_A2, SET_A4, SET_A6, SET_A8, SET_B4, SET_B6,
 # SET_B8 (see anglequadr.c)
 
-  ANGLE_SET = SET_A8
+  ANGLE_SET = SET_GL_3X2
 
 # Input file for all atoms (KEYWORD_REQUIRED).
 
@@ -60,8 +60,8 @@
 # PRD convergence limit. Both are KEYWORD_OPTIONAL. If PRD_N_MAX_ITER
 # all lines will be treated in CRD.
 
-#  PRD_N_MAX_ITER = 3
-#  PRD_ITER_LIMIT = 1.0E-2
+  PRD_N_MAX_ITER = 3
+  PRD_ITER_LIMIT = 1.0E-2
 
 # PRD_NG_?? are the Ng accelleration parameters for PRD iterations
 # (all are KEYWORD_OPTIONAL).
@@ -105,7 +105,7 @@
 # Set HYDROGEN_LTE = TRUE if hydrogen in the background has to be
 # treated with LTE populations (KEYWORD_DEFAULT). Default is FALSE
 
-  HYDROGEN_LTE = TRUE
+##  HYDROGEN_LTE = TRUE
 
 # Data file for background opacity fudge to compensate for missing
 # UV line haze. Type is KEYWORD_OPTIONAL. When set to ``none'' (the
@@ -166,7 +166,7 @@
 # Input Stokes mode (KEYWORD_OPTIONAL). 
 # Options are: NO_STOKES, FIELD_FREE, POLARIZATION_FREE, and FULL_STOKES.
 
-  STOKES_MODE = FULL_STOKES
+##  STOKES_MODE = FIELD_FREE
 
 # Include magneto-optical effects (KEYWORD_DEFAULT). Default is TRUE.
 
@@ -182,7 +182,7 @@
 
   INTERPOLATE_3D = BICUBIC_3D
 
-  BACKGROUND_POLARIZATION = TRUE
+##  BACKGROUND_POLARIZATION = TRUE
 
 ##  LIMIT_MEMORY = TRUE
 #  ALLOW_PASSIVE_BB = FALSE

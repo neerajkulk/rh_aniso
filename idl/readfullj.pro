@@ -1,11 +1,7 @@
-FUNCTION readfullJ, L0=l0, LN=lN, J20, reJ21, imJ21, reJ22, imJ22
+FUNCTION readfullJ, L0=l0, LN=lN, J20
 
   DEFAULT_J_FILE   = "J.dat"
   DEFAULT_J20_FILE = "J20.out"
-  DEFAULT_reJ21_FILE = "reJ21.out"
-  DEFAULT_imJ21_FILE = "imJ21.out"
-  DEFAULT_reJ22_FILE = "reJ22.out"
-  DEFAULT_imJ22_FILE = "imJ22.out"
 
 @geometry.common
 @spectrum.common
@@ -37,40 +33,15 @@ FUNCTION readfullJ, L0=l0, LN=lN, J20, reJ21, imJ21, reJ22, imJ22
   point_lun, lun, offset
   readu, lun, Jnu
   free_lun, lun
-  
-  J20 = Jnu
-  openr, lun, /GET_LUN, DEFAULT_J20_FILE
-  point_lun, lun, offset
-  readu, lun, J20
-  free_lun, lun
 
-  reJ21 = Jnu
-  openr, lun, /GET_LUN, DEFAULT_reJ21_FILE
-  point_lun, lun, offset
-  readu, lun, reJ21
-  free_lun, lun
+  IF (n_params() EQ 1) THEN BEGIN
+    J20 = Jnu
+    openr, lun, /GET_LUN, DEFAULT_J20_FILE
+    point_lun, lun, offset
+    readu, lun, J20
+    free_lun, lun
+  ENDIF
 
-
-  imJ21 = Jnu
-  openr, lun, /GET_LUN, DEFAULT_imJ21_FILE
-  point_lun, lun, offset
-  readu, lun, imJ21
-  free_lun, lun
-
-
-  reJ22 = Jnu
-  openr, lun, /GET_LUN, DEFAULT_reJ22_FILE
-  point_lun, lun, offset
-  readu, lun, reJ22
-  free_lun, lun
-
-  imJ22 = Jnu
-  openr, lun, /GET_LUN, DEFAULT_imJ22_FILE
-  point_lun, lun, offset
-  readu, lun, imJ22
-  free_lun, lun
-  
-  
   return, Jnu
 END
 

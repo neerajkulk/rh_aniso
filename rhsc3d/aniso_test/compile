@@ -1,7 +1,0 @@
-#!/bin/bash
-
-cd ..
-make
-cd aniso_test
-rm *txt
-

@@ -67,7 +67,7 @@ void initSolution(Atom *atom, Molecule *molecule)
   char    permission[3];
   bool_t  result, openJfile;
   int     la, j, niter, Nsr, Nplane, index, status, oflag;
-  double  gijk, wla, twohnu3_c2, hc_k, twoc, fourPI, *J, *J20, *reJ21, *imJ21, *reJ22, *imJ22;
+  double  gijk, wla, twohnu3_c2, hc_k, twoc, fourPI, *J, *J20;
   ActiveSet *as;
   AtomicLine *line;
   AtomicContinuum *continuum;
@@ -85,12 +85,6 @@ void initSolution(Atom *atom, Molecule *molecule)
 
     if (input.backgr_pol)
       spectrum.J20 = matrix_double(spectrum.Nspect, atmos.Nspace);
-      spectrum.reJ21 = matrix_double(spectrum.Nspect, atmos.Nspace);
-      spectrum.imJ21 = matrix_double(spectrum.Nspect, atmos.Nspace);
-      spectrum.reJ22 = matrix_double(spectrum.Nspect, atmos.Nspace);
-      spectrum.imJ22 = matrix_double(spectrum.Nspect, atmos.Nspace);
-
-
   }
   /* --- Allocate space for the emergent intensity --  -------------- */
 
@@ -141,14 +135,8 @@ void initSolution(Atom *atom, Molecule *molecule)
   /* --- Read angle-averaged intensity from previous run if necessary,
          and open file for J in case option for limited memory is set */
 
-  spectrum.fd_J     = -1;
-  spectrum.fd_J20   = -1;
-  spectrum.fd_reJ21 = -1;
-  spectrum.fd_imJ21 = -1;
-  spectrum.fd_reJ22 = -1;
-  spectrum.fd_imJ22 = -1;
-
-
+  spectrum.fd_J   = -1;
+  spectrum.fd_J20 = -1;
   oflag = 0;
   openJfile = FALSE;
 
@@ -174,7 +162,7 @@ void initSolution(Atom *atom, Molecule *molecule)
 	      "Unable to open input file %s with permission %s",
 	      input.JFile, permission);
       Error(ERROR_LEVEL_2, routineName, messageStr);
-    }  /*come back here and modify!!!!! TODO*/
+    }
     if (input.backgr_pol) {
       if ((spectrum.fd_J20 = open(J20_DOT_OUT, oflag,
 				  PERMISSIONS)) == -1) {
@@ -183,40 +171,6 @@ void initSolution(Atom *atom, Molecule *molecule)
 		J20_DOT_OUT, permission);
 	Error(ERROR_LEVEL_2, routineName, messageStr);
       }
-
-      if ((spectrum.fd_reJ21 = open(reJ21_DOT_OUT, oflag,
-				  PERMISSIONS)) == -1) {
-	sprintf(messageStr,
-		"Unable to open input file %s with permission %s",
-		reJ21_DOT_OUT, permission);
-	Error(ERROR_LEVEL_2, routineName, messageStr);
-      }
-
-
-      if ((spectrum.fd_imJ21 = open(imJ21_DOT_OUT, oflag,
-				  PERMISSIONS)) == -1) {
-	sprintf(messageStr,
-		"Unable to open input file %s with permission %s",
-		imJ21_DOT_OUT, permission);
-	Error(ERROR_LEVEL_2, routineName, messageStr);
-      }
-
-      if ((spectrum.fd_reJ22 = open(reJ22_DOT_OUT, oflag,
-				  PERMISSIONS)) == -1) {
-	sprintf(messageStr,
-		"Unable to open input file %s with permission %s",
-		reJ22_DOT_OUT, permission);
-	Error(ERROR_LEVEL_2, routineName, messageStr);
-      }
-
-      if ((spectrum.fd_imJ22 = open(imJ22_DOT_OUT, oflag,
-				  PERMISSIONS)) == -1) {
-	sprintf(messageStr,
-		"Unable to open input file %s with permission %s",
-		imJ22_DOT_OUT, permission);
-	Error(ERROR_LEVEL_2, routineName, messageStr);
-      }
-
     }
   }
   if (input.limit_memory) {
@@ -233,33 +187,11 @@ void initSolution(Atom *atom, Molecule *molecule)
 
       if (input.backgr_pol) {
 	J20 = (double *) malloc(atmos.Nspace * sizeof(double));
-	reJ21 = (double *) malloc(atmos.Nspace * sizeof(double));
-	imJ21 = (double *) malloc(atmos.Nspace * sizeof(double));
-	reJ22 = (double *) malloc(atmos.Nspace * sizeof(double));
-	imJ22 = (double *) malloc(atmos.Nspace * sizeof(double));
-
-	for (k = 0;  k < atmos.Nspace;  k++) {
-	  J20[k] = 0.0;
-	  reJ21[k] = 0.0;
-	  imJ21[k] = 0.0;
-	  reJ22[k] = 0.0;
-	  imJ22[k] = 0.0;
-
-	}
-	for (nspect = 0;  nspect < spectrum.Nspect;  nspect++){
+	for (k = 0;  k < atmos.Nspace;  k++) J20[k] = 0.0;
+	for (nspect = 0;  nspect < spectrum.Nspect;  nspect++)
 	  writeJ20lambda(nspect, J20);
-	  writereJ21lambda(nspect, reJ21);
-	  writeimJ21lambda(nspect, imJ21);
-	  writereJ22lambda(nspect, reJ22);
-	  writeimJ22lambda(nspect, imJ22);
 
-	}
 	free(J20);
-	free(reJ21);
-	free(imJ21);
-	free(reJ22);
-	free(imJ22);
-
       }
     }
   } else {
@@ -274,26 +206,11 @@ void initSolution(Atom *atom, Molecule *molecule)
       spectrum.fd_J = -1;
 
       if (input.backgr_pol) {
-	for (nspect = 0;  nspect < spectrum.Nspect;  nspect++){
+	for (nspect = 0;  nspect < spectrum.Nspect;  nspect++)
 	  readJ20lambda(nspect, spectrum.J20[nspect]);
-	  readreJ21lambda(nspect, spectrum.reJ21[nspect]);
-	  readimJ21lambda(nspect, spectrum.imJ21[nspect]);
-	  readreJ22lambda(nspect, spectrum.reJ22[nspect]);
-	  readimJ22lambda(nspect, spectrum.imJ22[nspect]);
-
-	}
+    
 	close(spectrum.fd_J20);
-	close(spectrum.fd_reJ21);
-	close(spectrum.fd_imJ21);
-	close(spectrum.fd_reJ22);
-	close(spectrum.fd_imJ22);
-
 	spectrum.fd_J20 = -1;
-	spectrum.fd_reJ21 = -1;
-	spectrum.fd_imJ21 = -1;
-	spectrum.fd_reJ22 = -1;
-	spectrum.fd_imJ22 = -1;
-
       }
     }
   }

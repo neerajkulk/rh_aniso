@@ -39,8 +39,8 @@ typedef struct{
 
 typedef struct {
   bool_t   vacuum_to_air, updateJ;
-  int      Nspect, *PRDindex, fd_J, fd_J20, fd_reJ21, fd_imJ21, fd_reJ22, fd_imJ22, fd_Imu;
-  double  *lambda, **J, **I, **Stokes_Q, **Stokes_U, **Stokes_V, **J20, **reJ21, **imJ21, **reJ22, **imJ22;
+  int      Nspect, *PRDindex, fd_J, fd_J20, fd_Imu;
+  double  *lambda, **J, **I, **Stokes_Q, **Stokes_U, **Stokes_V, **J20;
   ActiveSet *as;
 } Spectrum;
 
@@ -77,19 +77,6 @@ void readJlambda(int nspect, double *J);
 void writeJlambda(int nspect, double *J);
 void readJ20lambda(int nspect, double *J20);
 void writeJ20lambda(int nspect, double *J20);
-
-void readreJ21lambda(int nspect, double *reJ21);
-void writereJ21lambda(int nspect, double *reJ21);
-
-void readimJ21lambda(int nspect, double *imJ21);
-void writeimJ21lambda(int nspect, double *imJ21);
-
-void readreJ22lambda(int nspect, double *reJ22);
-void writereJ22lambda(int nspect, double *reJ22);
-
-void readimJ22lambda(int nspect, double *imJ22);
-void writeimJ22lambda(int nspect, double *imJ22);
-
 
 void readImu(int nspect, int mu, bool_t to_obs, double *I);
 void writeImu(int nspect, int mu, bool_t to_obs, double *I);

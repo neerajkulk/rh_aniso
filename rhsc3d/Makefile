@@ -16,7 +16,6 @@ include ../makefiles/makefile.$(CPU).$(OS)
 
     LIBS = -lrh -lrh_f90 $(ARCHLIBS)
 
-CFLAGS += -g
 
 ## --- Define groups of object files --                -------------- ##
 

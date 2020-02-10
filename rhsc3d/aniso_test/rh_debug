@@ -1,9 +1,0 @@
-#!/bin/bash
-
-cd ../..
-make
-cd rhsc3d
-make
-cd aniso_test
-rm *txt
-../rhsc3d
