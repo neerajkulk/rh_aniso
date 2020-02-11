@@ -376,7 +376,7 @@ void write_spherical_tensor()
    imJ22[k] = 0.0;
  }
 
-
+ 
 
  /* Now start integration over just 4607 wavelengths */
 
@@ -642,15 +642,6 @@ void write_spherical_tensor()
 	    
 	    imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam;
 	    
-	    
-	    /* reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam; */
-	    
-	    /* imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam; */
-	    
-	    /* reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam; */
-	    
-	    /* imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam; */
-	    
 	  } //k for loop 
 	  
 	} // else statement
@@ -658,53 +649,6 @@ void write_spherical_tensor()
      } //nspect for loop
    }
  }
-
-
-
-
-
-
-
-
-
-     /* for (to_obs = 0;  to_obs <= 1;  to_obs++){ */
-	
-     /* 	lamu = (2*atmos.Nrays*la + mu) + to_obs; */
-	
-     /* 	for (k = 0;  k < atmos.Nspace;  k++) { */
-	  
-     /* 	  if (angle_dep){ */
-     /* 	    domg_dlam = wmu * line->phi[lamu][k] *line->wphi[k] * wlambda; */
-     /* 	  } */
-     /* 	  else { */
-     /* 	    domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda; */
-     /* 	  } */
-	  
-     /* 	  J00[k] += I[k]*domg_dlam; */
-	  
-     /* 	  J20[k] += threemu1 * I[k] * domg_dlam; */
-
-     /* 	  //printf("musq = % \n ", musq); */
-     /* 	  //printf("inc = %e \n ", inc); */
-     /* 	  //printf("azi = %e \n ", azi); */
-     /* 	  printf("k_1 = %d \n ", k); */
-	  
-	  
-     /* 	  reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * I[k]) ) * domg_dlam; */
-
-     /* 	  //printf("k_2 = %d \n ", k); */
-     /* 	  imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * I[k]) ) * domg_dlam; */
-
-     /* 	  //printf("k_3 = %d \n ", k); */
-     /* 	  reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam; */
-     /* 	  ///printf("k_4 = %d \n ", k);	   */
-     /* 	  imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam; */
-	  
-
-
-
- //printf("made it out \n");
-
 
  FILE *fptr;
 
