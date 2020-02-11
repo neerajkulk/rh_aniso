@@ -800,26 +800,26 @@ void write_spherical_tensor()
 
 
 
- /* //free_as(nspect, eval_operator); */
- /* if (eval_operator) free(Psi); */
-
- /* free(chi); */
- /* if (solveStokes) { */
- /*   freeMatrix((void **) Ipol); */
- /*   freeMatrix((void **) Spol); */
- /* } else { */
- /*   free(I); */
- /*   free(S); */
- /* } */
-
- /* free(Jdag); */
- /* if (input.limit_memory) free(J); */
-
- /* free(J00); */
+ 
+ if (eval_operator) free(Psi); 
+ 
+ free(chi);
+ if (solveStokes) {
+   freeMatrix((void **) Ipol);
+   freeMatrix((void **) Spol);
+ } else {
+   free(I);
+   free(S);
+ }
+ 
+ free(Jdag);
+ if (input.limit_memory) free(J);
+ 
+ free(J00);
  /* free(J20); */
- /* free(reJ21); */
- /* free(imJ21); */
- /* free(reJ22); */
- /* free(imJ22); */
-
+ free(reJ21);
+ free(imJ21);
+ free(reJ22);
+ free(imJ22);
+ 
 }
