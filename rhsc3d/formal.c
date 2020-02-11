@@ -816,7 +816,7 @@ void write_spherical_tensor()
  if (input.limit_memory) free(J);
  
  free(J00);
- /* free(J20); */
+ if (input.limit_memory) free(J20);
  free(reJ21);
  free(imJ21);
  free(reJ22);
