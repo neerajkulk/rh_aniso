@@ -551,37 +551,6 @@ void write_spherical_tensor()
 	  }
 	}
 	
-
-     /* /\* --- The angle-independent case --               -------------- *\/ */
-     /* printf("angle_indep\n"); */
-     /* readBackground(nspect, 0, 0); */
-     /* Opacity(nspect, 0, 0, initialize=TRUE); */
-     /* if (eval_operator) addtoCoupling(nspect); */
-	
-     /* for (k = 0;  k < Nspace;  k++) { */
-     /* 	chi[k] = as->chi[k] + as->chi_c[k]; */
-     /* 	S[k]   = (as->eta[k] + */
-     /* 		  as->eta_c[k] + as->sca_c[k]*Jdag[k]) / chi[k]; */
-     /* } */
-     /* for (mu = 0;  mu < Nrays;  mu++) { */
-     /* 	wmu = 0.5 * geometry.wmu[mu]; */
-     /* 	for (to_obs = 0;  to_obs <= 1;  to_obs++) { */
-     /* 	  ShortChar(&geometry, nspect, mu, to_obs, chi, S, I, Psi); */
-	
-     /* 	  if (eval_operator) { */
-     /* 	    for (k = 0;  k < Nspace;  k++) Psi[k] /= chi[k]; */
-     /* 	    addtoGamma(nspect, wmu, I, Psi); */
-     /* 	  } */
-     /* 	  if (spectrum.updateJ) { */
-     /* 	    for (k = 0;  k < Nspace;  k++) */
-     /* 	      J[k] += I[k] * wmu; */
-     /* 	    addtoRates(nspect, mu, to_obs, wmu, I, redistribute); */
-     /* 	  } */
-     /* 	} */
-     /* 	for (l = 0;  l < geometry.Nplane;  l++) */
-     /* 	  spectrum.I[nspect*Nrays + mu][l] = I[l]; */
-     /* } */
-	
 	line = as->art[0][0].ptype.line; // define strontium Line
 	//printf("line->lambda0 = %e\n", line->lambda0);
 	
