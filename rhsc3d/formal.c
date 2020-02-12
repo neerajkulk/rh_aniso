@@ -579,17 +579,19 @@ void write_spherical_tensor()
 	      
 	      domg_dlam = wmu * line->phi[lamu][k] *line->wphi[k] * wlambda;
 	      
-	      J00[k] += I[k]*domg_dlam;
+	      J00[k] += Ipol[0][k] * domg_dlam ;
+		
+	      J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
 	      
-	      J20[k] += threemu1 * I[k] * domg_dlam;
+	      reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
 	      
-	      reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * I[k]) ) * domg_dlam;
+	      imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
 	      
-	      imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * I[k]) ) * domg_dlam;
+	      reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
 	      
-	      reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam;
+	      imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
 	      
-	      imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam;
+	      
 	    } //k for loop 
 	  } //to obs for loop
 	} // angle_dep if statement
@@ -600,17 +602,18 @@ void write_spherical_tensor()
 	    domg_dlam = 2.0 * wmu * line->phi[la][k] *line->wphi[k] * wlambda;
 	    // need to multiply by 2 if vel = 0. Don't understand why...
 	    
-	    J00[k] += I[k]*domg_dlam;
+	      
+	    J00[k] += Ipol[0][k] * domg_dlam ;
 	    
-	    J20[k] += threemu1 * I[k] * domg_dlam;
+	    J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
 	    
-	    reJ21[k] += sqrt(1.0 - musq)*inc*cos(azi)* I[k] * domg_dlam;
+	    reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
 	    
-	    imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * I[k]) ) * domg_dlam;
+	    imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
 	    
-	    reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam;
+	    reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
 	    
-	    imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * I[k]))  * domg_dlam;
+	    imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
 	    
 	  } //k for loop 
 	  
