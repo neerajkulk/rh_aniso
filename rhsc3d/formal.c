@@ -597,7 +597,8 @@ void write_spherical_tensor()
 	  //printf("inside else statement \n");
 	  for (k = 0;  k < atmos.Nspace;  k++) {
 	    
-	    domg_dlam = wmu * line->phi[la][k] *line->wphi[k] * wlambda;
+	    domg_dlam = 2.0 * wmu * line->phi[la][k] *line->wphi[k] * wlambda;
+	    // need to multiply by 2 if vel = 0. Don't understand why...
 	    
 	    J00[k] += I[k]*domg_dlam;
 	    
