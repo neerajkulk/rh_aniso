@@ -9,7 +9,7 @@
 /* --- Formal solution with given source function and PRD emission
        profile. --                                     -------------- */
 
- 
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -45,24 +45,24 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
   register int k, l, mu, n;
 
   bool_t   initialize, boundbound, polarized_as, polarized_c,
-           PRD_angle_dep, to_obs, solveStokes, angle_dep;
-  enum     FeautrierOrder F_order;     
+	   PRD_angle_dep, to_obs, solveStokes, angle_dep;
+  enum     FeautrierOrder F_order;
   int      Nspace = atmos.Nspace, Nrays = atmos.Nrays;
   double  *I, *chi, *S, **Ipol, **Spol, *Psi, *Jdag, wmu, dJmax, dJ,
-          *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V,
-          *J20dag, musq, threemu1, threemu2, *J, *J20;
+	  *eta_Q, *eta_U, *eta_V, *eta_c_Q, *eta_c_U, *eta_c_V,
+	  *J20dag, musq, threemu1, threemu2, *J, *J20;
   ActiveSet *as;
 
   /* --- Retrieve active set as of transitions at wavelength nspect - */
 
   as = &spectrum.as[nspect];
   alloc_as(nspect, eval_operator);
-  
+
   /* --- Check whether current active set includes a bound-bound
-         and/or polarized transition and/or angle-dependent PRD
-         transition, and/or polarization through background scattering.
-         Otherwise, only angle-independent opacity and source functions
-         are needed --                                 -------------- */
+	 and/or polarized transition and/or angle-dependent PRD
+	 transition, and/or polarization through background scattering.
+	 Otherwise, only angle-independent opacity and source functions
+	 are needed --                                 -------------- */
 
   /* --- Check for bound-bound transition in active set -- ---------- */
 
@@ -83,15 +83,15 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
   /* --- Determine if we solve for I, or for I, Q, U, V -- ---------- */
 
   solveStokes   = (input.StokesMode == FULL_STOKES &&
-                   (polarized_as || polarized_c || input.backgr_pol));
+		   (polarized_as || polarized_c || input.backgr_pol));
 
   /* --- Determine if we have to do angle-dependent opacity and
-         emissivity --                                 -------------- */
+	 emissivity --                                 -------------- */
 
   angle_dep     = (polarized_as || polarized_c || PRD_angle_dep ||
-                   (input.backgr_pol && input.StokesMode == FULL_STOKES) ||
-                   (atmos.moving &&
-                    (boundbound || atmos.backgrflags[nspect].hasline)));
+		   (input.backgr_pol && input.StokesMode == FULL_STOKES) ||
+		   (atmos.moving &&
+		    (boundbound || atmos.backgrflags[nspect].hasline)));
 
   /* --- Allocate temporary space --                   -------------- */
 
@@ -145,9 +145,9 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
     for (mu = 0;  mu < Nrays;  mu++) {
       wmu = 0.5 * geometry.wmu[mu];
       if (input.backgr_pol) {
-        musq = SQ(geometry.muz[mu]);
-        threemu1 = TWOSQRTTWO * (3.0*musq - 1.0);
-        threemu2 = (3.0 * TWOSQRTTWO) * (musq - 1.0);
+	musq = SQ(geometry.muz[mu]);
+	threemu1 = TWOSQRTTWO * (3.0*musq - 1.0);
+	threemu2 = (3.0 * TWOSQRTTWO) * (musq - 1.0);
       }
       for (to_obs = 0;  to_obs <= 1;  to_obs++) {
 	initialize = (mu == 0 && to_obs == 0);
@@ -163,49 +163,49 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 	  chi[k] = as->chi[k] + as->chi_c[k];
 	  S[k]   = as->eta[k] + as->eta_c[k] + as->sca_c[k]*Jdag[k];
 	}
-        if (solveStokes) {
-          for (k = Nspace;  k < 4*Nspace;  k++) Spol[0][k] = 0.0;
+	if (solveStokes) {
+	  for (k = Nspace;  k < 4*Nspace;  k++) Spol[0][k] = 0.0;
 
-          /* --- Add emissivity due to active set for Q, U, V -- ---- */
+	  /* --- Add emissivity due to active set for Q, U, V -- ---- */
 
-          if (polarized_as) {
-            for (k = Nspace;  k < 4*Nspace;  k++)
-              Spol[0][k] += as->eta[k];
-          }
-          /* --- Add emissivity due to background lines -- ---------- */
+	  if (polarized_as) {
+	    for (k = Nspace;  k < 4*Nspace;  k++)
+	      Spol[0][k] += as->eta[k];
+	  }
+	  /* --- Add emissivity due to background lines -- ---------- */
 
-          if (polarized_c) {
-            for (k = Nspace;  k < 4*Nspace;  k++)
-              Spol[0][k] += as->eta_c[k];
-          }
-          /* --- Add emissivity due to background scattering -- ----- */
+	  if (polarized_c) {
+	    for (k = Nspace;  k < 4*Nspace;  k++)
+	      Spol[0][k] += as->eta_c[k];
+	  }
+	  /* --- Add emissivity due to background scattering -- ----- */
 
-          if (input.backgr_pol && input.StokesMode == FULL_STOKES) {
-            for (k = 0;  k < Nspace;  k++) {
-              Spol[0][k] += threemu1 * as->sca_c[k]*J20dag[k];
-              Spol[1][k] += threemu2 * as->sca_c[k]*J20dag[k];
-            }
-          }
-          for (n = 0;  n < 4;  n++) {
-            for (k = 0;  k < Nspace;  k++)
-              Spol[n][k] /= chi[k];
-          }
+	  if (input.backgr_pol && input.StokesMode == FULL_STOKES) {
+	    for (k = 0;  k < Nspace;  k++) {
+	      Spol[0][k] += threemu1 * as->sca_c[k]*J20dag[k];
+	      Spol[1][k] += threemu2 * as->sca_c[k]*J20dag[k];
+	    }
+	  }
+	  for (n = 0;  n < 4;  n++) {
+	    for (k = 0;  k < Nspace;  k++)
+	      Spol[n][k] /= chi[k];
+	  }
 	  ShortChar_Stokes(&geometry, nspect, mu, to_obs,
 			   chi, Spol, Ipol, Psi);
 	} else {
-          for (k = 0;  k < Nspace;  k++)
-            S[k] /= chi[k];
+	  for (k = 0;  k < Nspace;  k++)
+	    S[k] /= chi[k];
 	  ShortChar(&geometry, nspect, mu, to_obs, chi, S, I, Psi);
 	}
 	if (eval_operator) {
-          for (k = 0;  k < Nspace;  k++) Psi[k] /= chi[k];
+	  for (k = 0;  k < Nspace;  k++) Psi[k] /= chi[k];
 	  addtoGamma(nspect, wmu, I, Psi);
 	}
 
-        if (spectrum.updateJ) {
+	if (spectrum.updateJ) {
 
 	  /* --- Accumulate mean intensity and rates -- ----------- */
-	  
+
 	  for (k = 0;  k < Nspace;  k++)
 	    J[k] += wmu * I[k];
 	  addtoRates(nspect, mu, to_obs, wmu, I, redistribute);
@@ -227,11 +227,11 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
 	spectrum.I[nspect*Nrays + mu][l] = I[l];
 
       if (solveStokes) {
-        for (l = 0;  l < geometry.Nplane;  l++) {
-          spectrum.Stokes_Q[nspect*Nrays + mu][l] = Ipol[1][l];
-          spectrum.Stokes_U[nspect*Nrays + mu][l] = Ipol[2][l];
-          spectrum.Stokes_V[nspect*Nrays + mu][l] = Ipol[3][l];
-        }
+	for (l = 0;  l < geometry.Nplane;  l++) {
+	  spectrum.Stokes_Q[nspect*Nrays + mu][l] = Ipol[1][l];
+	  spectrum.Stokes_U[nspect*Nrays + mu][l] = Ipol[2][l];
+	  spectrum.Stokes_V[nspect*Nrays + mu][l] = Ipol[3][l];
+	}
       }
     }
   } else {
@@ -282,7 +282,7 @@ double Formal(int nspect, bool_t eval_operator, bool_t redistribute)
   free_as(nspect, eval_operator);
   if (eval_operator) free(Psi);
 
-  free(chi); 
+  free(chi);
   if (solveStokes) {
     freeMatrix((void **) Ipol);
     freeMatrix((void **) Spol);
@@ -376,7 +376,7 @@ void write_spherical_tensor()
    imJ22[k] = 0.0;
  }
 
- 
+
 
  /* Now start integration over just 4607 wavelengths */
 
@@ -414,7 +414,7 @@ void write_spherical_tensor()
 		     (polarized_as || polarized_c || input.backgr_pol));
 
    /* --- Determine if we have to do angle-dependent opacity and
-        emissivity --                                 -------------- */
+	emissivity --                                 -------------- */
 
    angle_dep     = (polarized_as || polarized_c || PRD_angle_dep ||
 		     (input.backgr_pol && input.StokesMode == FULL_STOKES) ||
@@ -480,13 +480,13 @@ void write_spherical_tensor()
 	}
 	for (to_obs = 0;  to_obs <= 1;  to_obs++) {
 	  initialize = (mu == 0 && to_obs == 0);
-	  
+
 	  if (initialize || atmos.backgrflags[nspect].hasline)
 	    readBackground(nspect, mu, to_obs);
-	  
+
 	  if (initialize || boundbound)
 	    Opacity(nspect, mu, to_obs, initialize);
-	  
+
 	  if (eval_operator) addtoCoupling(nspect);
 	  for (k = 0;  k < Nspace;  k++) {
 	    chi[k] = as->chi[k] + as->chi_c[k];
@@ -494,21 +494,21 @@ void write_spherical_tensor()
 	  }
 	  if (solveStokes) {
 	    for (k = Nspace;  k < 4*Nspace;  k++) Spol[0][k] = 0.0;
-	    
+
 	    /* --- Add emissivity due to active set for Q, U, V -- ---- */
-	    
+
 	    if (polarized_as) {
 	      for (k = Nspace;  k < 4*Nspace;  k++)
 		Spol[0][k] += as->eta[k];
 	    }
 	    /* --- Add emissivity due to background lines -- ---------- */
-	    
+
 	    if (polarized_c) {
 	      for (k = Nspace;  k < 4*Nspace;  k++)
 		Spol[0][k] += as->eta_c[k];
 	    }
 	    /* --- Add emissivity due to background scattering -- ----- */
-	    
+
 	    if (input.backgr_pol && input.StokesMode == FULL_STOKES) {
 	      for (k = 0;  k < Nspace;  k++) {
 		Spol[0][k] += threemu1 * as->sca_c[k]*J20dag[k];
@@ -530,95 +530,95 @@ void write_spherical_tensor()
 	    for (k = 0;  k < Nspace;  k++) Psi[k] /= chi[k];
 	    addtoGamma(nspect, wmu, I, Psi);
 	  }
-	  
+
 	  if (spectrum.updateJ) {
-	    
+
 	    /* --- Accumulate mean intensity and rates -- ----------- */
-	    
+
 	    for (k = 0;  k < Nspace;  k++)
 	      J[k] += wmu * I[k];
 	    addtoRates(nspect, mu, to_obs, wmu, I, redistribute);
-	    
+
 	    /* --- Accumulate anisotropy --            -------------- */
-	    
+
 	    if (input.backgr_pol) {
 	      for (k = 0;  k < Nspace;  k++)
 		J20[k] +=
 		  (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * wmu;
 	    }
-	    
+
 	    if (PRD_angle_dep) writeImu(nspect, mu, to_obs, I);
 	  }
 	}
-	
+
 	line = as->art[0][0].ptype.line; // define strontium Line
 	//printf("line->lambda0 = %e\n", line->lambda0);
-	
-	
-	
+
+
+
 	la = nspect - line->Nblue;
 	wlambda = getwlambda_line(line,la);
-	
+
 	wmu = 0.5 * geometry.wmu[mu];
 	musq = SQ(geometry.muz[mu]);
 	threemu1 = TWOSQRTTWO * (3.0*musq - 1.0);
-	
+
 	azi = atan2(geometry.muy[mu],geometry.mux[mu]);
 	inc = geometry.muz[mu];                   /* inc is the same is mu*/
-	
+
 	//printf("%e \n",inc);
-	
+
 	if (atmos.moving){
 	  //printf("inside if statement \n");
-	  
+
 	  for (to_obs = 0;  to_obs <= 1;  to_obs++){
-	    
+
 	    lamu = (2*atmos.Nrays*la + mu) + to_obs;
-	    
+
 	    for (k = 0;  k < atmos.Nspace;  k++) {
-	      
+
 	      domg_dlam = wmu * line->phi[lamu][k] *line->wphi[k] * wlambda;
-	      
+
 	      J00[k] += Ipol[0][k] * domg_dlam ;
-		
+
 	      J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
-	      
+
 	      reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
-	      
+
 	      imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
-	      
+
 	      reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
-	      
+
 	      imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
-	      
-	      
-	    } //k for loop 
+
+
+	    } //k for loop
 	  } //to obs for loop
 	} // angle_dep if statement
 	else {
 	  //printf("inside else statement \n");
 	  for (k = 0;  k < atmos.Nspace;  k++) {
-	    
+
 	    domg_dlam = 2.0 * wmu * line->phi[la][k] *line->wphi[k] * wlambda;
 	    // need to multiply by 2 if vel = 0. Don't understand why...
-	    
-	      
+
+
 	    J00[k] += Ipol[0][k] * domg_dlam ;
-	    
+
 	    J20[k] += (threemu1 * Ipol[0][k] + threemu2 * Ipol[1][k]) * domg_dlam;
-	    
+
 	    reJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * cos(azi) * (Ipol[0][k] + Ipol[1][k]) + sin(azi)*Ipol[2][k]) )   * domg_dlam;
-	    
+
 	    imJ21[k] += (sqrt(3.0)/2.0)*( sqrt(1.0 - musq) * ( -1.0 * inc * sin(azi) * (Ipol[0][k] + Ipol[1][k]) - cos(azi)*Ipol[2][k]) ) * domg_dlam;
-	    
+
 	    reJ22[k] += (sqrt(3.0)/4.0)*(cos(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) + 2.0*sin(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
-	    
+
 	    imJ22[k] += (sqrt(3.0)/4.0)*(sin(2.0*azi)*((1.0-musq) * Ipol[0][k] - (1.0 + musq)* Ipol[1][k]) - 2.0*cos(2.0*azi)*inc*Ipol[3][k])  * domg_dlam;
-	    
-	  } //k for loop 
-	  
+
+	  } //k for loop
+
 	} // else statement
-	
+
      } //nspect for loop
    }
  }
@@ -717,9 +717,9 @@ void write_spherical_tensor()
 
 
 
- 
- if (eval_operator) free(Psi); 
- 
+
+ if (eval_operator) free(Psi);
+
  free(chi);
  if (solveStokes) {
    freeMatrix((void **) Ipol);
@@ -728,15 +728,15 @@ void write_spherical_tensor()
    free(I);
    free(S);
  }
- 
+
  free(Jdag);
  if (input.limit_memory) free(J);
- 
+
  free(J00);
  if (input.limit_memory) free(J20);
  free(reJ21);
  free(imJ21);
  free(reJ22);
  free(imJ22);
- 
+
 }
